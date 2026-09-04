@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Mining Adventure 3D</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;background:#08120e;color:#fff}
+#game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%}
+.ui{position:fixed;inset:0;pointer-events:none}.click{pointer-events:auto}
+.top{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;gap:12px}
+.wallet{min-width:175px;padding:8px 14px;border:2px solid #202b31;border-radius:13px;background:linear-gradient(#17222a,#080d11);box-shadow:0 4px 12px #0008;text-align:center;font-weight:800;font-size:21px}.wallet b{color:#ffd43b}.wallet.blue b{color:#4dbbff}.wallet.purple b{color:#d46cff}
+.left{position:absolute;left:18px;top:78px;display:flex;flex-direction:column;gap:9px}.btn{border:2px solid #c9a55a;background:linear-gradient(#1b2528,#11181b);color:#fff;border-radius:11px;padding:13px 20px;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 4px 10px #0008}.btn:hover{filter:brightness(1.2)}.btn.green{border-color:#48cf63;background:linear-gradient(#1f9b3d,#126325)}.btn.purple{border-color:#bd72ff;background:linear-gradient(#7e34b5,#4a1e75)}
+.panel{position:absolute;right:18px;top:18px;width:275px;background:linear-gradient(135deg,#121c20ee,#071015ee);border:2px solid #c3a95d;border-radius:12px;padding:15px;box-shadow:0 8px 24px #0009}.panel h2{margin:0 0 9px;text-align:center;font-size:19px;color:#ffe26c}.progress{height:16px;background:#263035;border-radius:9px;overflow:hidden}.progress>i{display:block;height:100%;background:linear-gradient(90deg,#ff9d00,#ffd32b);width:46%}.questrow{display:flex;justify-content:space-between;margin-top:10px;font-weight:800}.small{font-size:13px;color:#b9c4c8}.bottom-left{position:absolute;left:18px;bottom:18px;width:190px;background:#10191dee;border:2px solid #28353a;border-radius:12px;padding:13px}.level{font-size:19px;font-weight:900;color:#ffe36a}.xp{height:13px;background:#253037;border-radius:8px;margin-top:7px;overflow:hidden}.xp i{display:block;height:100%;background:#1b9be8;width:43%}
+.hotbar{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:6px}.slot{width:72px;height:72px;background:#10171beF;border:2px solid #3d474c;border-radius:9px;padding:7px;text-align:center;font-weight:800}.slot.active{border-color:#ffe06a;box-shadow:0 0 12px #ffd53a55}.slot .icon{font-size:28px;display:block}.slot small{font-size:12px;color:#d9e0e2}
+.actions{position:absolute;right:18px;bottom:18px;display:flex;flex-direction:column;gap:9px}.bigbtn{width:178px;padding:14px;border-radius:10px;border:2px solid #63d875;background:#169c3a;color:white;font-size:18px;font-weight:900;cursor:pointer}.bigbtn.tele{border-color:#c27aff;background:#7d2fc0}
+.hint{position:absolute;left:50%;bottom:108px;transform:translateX(-50%);background:#071015dd;border:1px solid #c7b36c;border-radius:9px;padding:8px 14px;font-weight:700;white-space:nowrap}
+.modal{position:absolute;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.window{width:min(760px,94vw);max-height:85vh;overflow:auto;background:linear-gradient(#18252a,#0b1215);border:2px solid #c4a85c;border-radius:15px;padding:20px;box-shadow:0 18px 50px #000c}.window h2{margin:0 0 15px;color:#ffe36d}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.card{padding:13px;border:1px solid #3d4a4e;border-radius:10px;background:#111b1f}.card h3{margin:0 0 5px}.close{float:right;border:0;background:#8f291f;color:white;border-radius:6px;padding:5px 9px;font-weight:900;cursor:pointer}
+#toast{position:absolute;top:90px;left:50%;transform:translateX(-50%);background:#0b1711ee;border:1px solid #54d86d;border-radius:9px;padding:9px 16px;font-weight:800;display:none}
+#crosshair{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);opacity:.8}#crosshair:before,#crosshair:after{content:"";position:absolute;background:#fff}#crosshair:before{width:18px;height:2px;top:8px;left:0}#crosshair:after{width:2px;height:18px;left:8px;top:0}
+#mobile{display:none;position:absolute;inset:0}.joy{position:absolute;bottom:25px;left:25px;width:125px;height:125px;border:2px solid #ffffff55;background:#0003;border-radius:50%;pointer-events:auto}.stick{position:absolute;width:55px;height:55px;left:33px;top:33px;border-radius:50%;background:#ffffff55}.mineTouch{position:absolute;right:25px;bottom:35px;width:95px;height:95px;border-radius:50%;background:#9b4bd5bb;border:2px solid #fff7;font-weight:900;color:#fff;pointer-events:auto}
+@media(max-width:800px){.top{left:8px;transform:none;right:8px;justify-content:center}.wallet{min-width:0;font-size:14px;padding:7px}.left{left:8px;top:70px}.btn{padding:9px 12px;font-size:13px}.panel{right:8px;top:70px;width:210px;font-size:13px}.actions{right:8px;bottom:12px}.bigbtn{width:125px;padding:10px;font-size:14px}.bottom-left{left:8px;bottom:12px;width:145px}.hotbar{bottom:9px}.slot{width:50px;height:55px;padding:4px}.slot .icon{font-size:20px}.hint{bottom:75px;font-size:12px}.slot:nth-child(n+5){display:none}}
+@media(pointer:coarse){#mobile{display:block}.hint{display:none}}
+</style>
+</head>
+<body>
+<div id="game"></div>
+<div class="ui">
+  <div class="top">
+    <div class="wallet">🪙 <b id="cash">100</b></div>
+    <div class="wallet blue">💎 <b id="gems">0</b></div>
+    <div class="wallet purple">🔮 <b id="crystals">0</b></div>
+  </div>
+  <div class="left click">
+    <button class="btn" data-open="shop">🧰 Shop</button>
+    <button class="btn" data-open="inventory">🎒 Inventory</button>
+    <button class="btn" data-open="upgrades">⬆️ Upgrades</button>
+    <button class="btn" data-open="quests">📜 Quests</button>
+    <button class="btn" data-open="worlds">🌍 Worlds</button>
+  </div>
+  <div class="panel">
+    <h2>Active Quest</h2>
+    <div><b id="questName">Mine 50 Stone</b></div>
+    <div class="progress"><i id="questBar"></i></div>
+    <div class="questrow"><span id="questCount">0 / 50</span><span>🪙 1,000 &nbsp; 💎 25</span></div>
+  </div>
+  <div class="bottom-left">
+    <div class="level">⭐ Level <span id="level">1</span></div>
+    <div class="xp"><i id="xpbar"></i></div>
+    <div class="small" id="xptext">0 / 100 XP</div>
+  </div>
+  <div class="hotbar" id="hotbar"></div>
+  <div class="actions click">
+    <button class="bigbtn" id="sellBtn">💰 Sell Ore</button>
+    <button class="bigbtn tele" id="teleBtn">🌀 Teleport</button>
+  </div>
+  <div class="hint" id="hint">WASD to move • Mouse to look • Click / E to mine nearby ore</div>
+  <div id="crosshair"></div>
+  <div id="toast"></div>
+  <div id="mobile"><div class="joy"><div class="stick" id="stick"></div></div><button class="mineTouch" id="mineTouch">MINE</button></div>
+
+  <div class="modal click" id="modal">
+    <div class="window">
+      <button class="close" id="close">X</button>
+      <h2 id="modalTitle">Menu</h2>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
+const SAVE_KEY="mining_adventure_save_v1";
+const ores={
+ stone:{name:"Stone",icon:"🪨",value:1,color:0x7e8790,hp:3,xp:4},
+ copper:{name:"Copper Ore",icon:"🟠",value:8,color:0xc66a36,hp:5,xp:8},
+ iron:{name:"Iron Ore",icon:"⚙️",value:18,color:0xaebbc4,hp:7,xp:12},
+ gold:{name:"Gold Ore",icon:"🟨",value:50,color:0xffc400,hp:10,xp:18},
+ crystal:{name:"Amethyst",icon:"🔮",value:120,color:0x9b39d4,hp:13,xp:30}
+};
+const worlds={
+ Meadows:{name:"Green Meadows",difficulty:"Easy",color:0x69a85a,ore:["stone","copper","iron"],cost:0},
+ Desert:{name:"Desert Mines",difficulty:"Medium",color:0xb98543,ore:["stone","copper","iron","gold"],cost:250},
+ Crystal:{name:"Crystal Caverns",difficulty:"Hard",color:0x244b75,ore:["iron","gold","crystal"],cost:1000},
+ Volcano:{name:"Volcano Depths",difficulty:"Very Hard",color:0x5a2a25,ore:["iron","gold","crystal"],cost:3500},
+ Frozen:{name:"Frozen Peaks",difficulty:"Extreme",color:0x477d9c,ore:["stone","iron","crystal"],cost:8000}
+};
+let state=JSON.parse(localStorage.getItem(SAVE_KEY)||"null")||{
+ cash:100,gems:0,crystals:0,level:1,xp:0,world:"Meadows",selected:0,
+ inventory:{stone:0,copper:0,iron:0,gold:0,crystal:0},
+ upgrades:{power:1,backpack:20,sell:1,speed:1},
+ quest:0, questDone:false
+};
+const save=()=>localStorage.setItem(SAVE_KEY,JSON.stringify(state));
+const toast=(s)=>{const e=document.querySelector("#toast");e.textContent=s;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",1800)};
+const xpNeed=()=>100+(state.level-1)*75;
+
+let scene,camera,renderer,clock;
+const keys={};
+let yaw=0,pitch=.38,drag=false,lastX=0,lastY=0;
+let player,playerBody,oreNodes=[],trees=[],worldGroup,particles=[],hitEffects=[];
+let cameraShake=0;
+const ray=new THREE.Raycaster();
+const tmp=new THREE.Vector3();
+
+init(); buildWorld(); buildUI(); animate();
+
+function init(){
+ scene=new THREE.Scene();
+ scene.background=new THREE.Color(0x8bc9f2);
+ scene.fog=new THREE.Fog(0x8bc9f2,35,105);
+ camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,300);
+ renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
+ renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight);
+ renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+ document.querySelector("#game").appendChild(renderer.domElement);
+ clock=new THREE.Clock();
+ const hemi=new THREE.HemisphereLight(0xdaf2ff,0x38502d,2.2);scene.add(hemi);
+ const sun=new THREE.DirectionalLight(0xfff1c6,3.2);sun.position.set(-25,45,20);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-70;sun.shadow.camera.right=70;sun.shadow.camera.top=70;sun.shadow.camera.bottom=-70;scene.add(sun);
+ window.addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+ window.addEventListener("keydown",e=>{keys[e.code]=true;if(e.code==="KeyE"||e.code==="Space")mine()});
+ window.addEventListener("keyup",e=>keys[e.code]=false);
+ renderer.domElement.addEventListener("pointerdown",e=>{drag=true;lastX=e.clientX;lastY=e.clientY;if(e.button===0)mine()});
+ window.addEventListener("pointerup",()=>drag=false);
+ window.addEventListener("pointermove",e=>{if(!drag)return; yaw-=(e.clientX-lastX)*.008;pitch-= (e.clientY-lastY)*.006;pitch=Math.max(.05,Math.min(.9,pitch));lastX=e.clientX;lastY=e.clientY});
+}
+
+function mat(c,rough=1){return new THREE.MeshStandardMaterial({color:c,roughness:rough})}
+function box(w,h,d,c){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));m.castShadow=m.receiveShadow=true;return m}
+function cyl(r,h,c,seg=8){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r*.82,h,seg),mat(c));m.castShadow=m.receiveShadow=true;return m}
+function cone(r,h,c,seg=8){const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,seg),mat(c));m.castShadow=m.receiveShadow=true;return m}
+
+function buildWorld(){
+ if(worldGroup)scene.remove(worldGroup);
+ worldGroup=new THREE.Group();scene.add(worldGroup);
+ const data=worlds[state.world];
+ const ground=box(140,.6,140,data.color);ground.position.y=-.3;worldGroup.add(ground);
+ // paths
+ for(const x of [-18,0,18]){const p=box(4,.03,140,0xc5a06a);p.position.set(x,.015,0);worldGroup.add(p)}
+ const p2=box(140,.03,5,0xc5a06a);p2.position.y=.02;worldGroup.add(p2);
+ // mountain silhouettes
+ for(let i=0;i<15;i++){const m=cone(6+Math.random()*7,12+Math.random()*14, data.color===0x477d9c?0x7ba2b8:0x445c58,6);m.position.set((Math.random()-.5)*120,6,(Math.random()-.5)*100-35);worldGroup.add(m)}
+ // cabin
+ const cabin=new THREE.Group();cabin.position.set(-25,0,-15);
+ const base=box(10,5,7,0x8a5a32);base.position.y=2.5;cabin.add(base);
+ const roof=new THREE.Mesh(new THREE.ConeGeometry(7.2,4.5,4),mat(0x4a2b1d));roof.rotation.y=Math.PI/4;roof.position.y=7;cabin.add(roof);
+ const door=box(1.5,2.8,.2,0x3a2417);door.position.set(0,1.4,3.6);cabin.add(door);
+ for(const x of [-3,3]){const win=box(1.4,1.2,.2,0xffd15a);win.position.set(x,3,3.58);cabin.add(win)}
+ worldGroup.add(cabin);
+ // trees
+ for(let i=0;i<75;i++){
+   let x=(Math.random()-.5)*115,z=(Math.random()-.5)*105;
+   if(Math.abs(x)<8||Math.abs(z)<8|| (x+25)*(x+25)+(z+15)*(z+15)<180) continue;
+   addTree(x,z);
+ }
+ // rocks
+ for(let i=0;i<22;i++) addRock((Math.random()-.5)*100,(Math.random()-.5)*90);
+ spawnPlayer();
+ spawnOres();
+}
+
+function addTree(x,z){
+ const g=new THREE.Group();g.position.set(x,0,z);
+ const trunk=cyl(.45,3,0x684329,7);trunk.position.y=1.5;g.add(trunk);
+ for(let i=0;i<3;i++){const t=cone(2.8-i*.45,4.5, state.world==="Frozen"?0x35606b:0x245f34,8);t.position.y=4+i*1.8;g.add(t)}
+ worldGroup.add(g);trees.push(g);
+}
+function addRock(x,z){
+ const r=new THREE.Mesh(new THREE.DodecahedronGeometry(.8+Math.random()*1.4,0),mat(0x596166));r.scale.y=.6;r.position.set(x,.65,z);r.rotation.set(Math.random(),Math.random(),Math.random());r.castShadow=r.receiveShadow=true;worldGroup.add(r);
+}
+function spawnPlayer(){
+ if(player)scene.remove(player);
+ player=new THREE.Group();
+ player.position.set(0,0,12);
+ player.rotation.y=Math.PI;
+ player.userData={walkTime:0, mining:false, mineTime:0, velocity:0};
+ scene.add(player);
+
+ const skin=0xb87943, hairC=0x392517, shirt=0x15191b, pants=0x20262a, shoe=0x101315;
+ const rig=new THREE.Group(); player.add(rig);
+
+ // Feet / legs
+ const leftLeg=new THREE.Group(), rightLeg=new THREE.Group();
+ leftLeg.position.set(-.38,1.35,0); rightLeg.position.set(.38,1.35,0);
+ const ll=box(.58,1.45,.62,pants); ll.position.y=-.72;
+ const rr=box(.58,1.45,.62,pants); rr.position.y=-.72;
+ leftLeg.add(ll); rightLeg.add(rr);
+ const ls=box(.68,.38,.9,shoe); ls.position.set(0,-1.42,.12);
+ const rs=box(.68,.38,.9,shoe); rs.position.set(0,-1.42,.12);
+ leftLeg.add(ls); rightLeg.add(rs);
+ rig.add(leftLeg,rightLeg);
+
+ // Torso
+ const torso=box(1.65,1.65,.9,shirt); torso.position.y=2.55; rig.add(torso);
+
+ // Head, hair and face
+ const neck=cyl(.22,.28,skin,8); neck.position.y=3.45; rig.add(neck);
+ const head=new THREE.Mesh(new THREE.BoxGeometry(1.12,1.18,1.12),mat(skin)); head.position.y=4.12; head.castShadow=true; rig.add(head);
+ const hair=new THREE.Mesh(new THREE.BoxGeometry(1.18,.42,1.18),mat(hairC)); hair.position.set(0,4.67,0); hair.castShadow=true; rig.add(hair);
+ const fringe=box(1.02,.3,.35,hairC); fringe.position.set(0,4.46,.53); rig.add(fringe);
+ const eyeL=box(.11,.11,.06,0x172025), eyeR=eyeL.clone();
+ eyeL.position.set(-.2,4.16,.57); eyeR.position.set(.2,4.16,.57); rig.add(eyeL,eyeR);
+
+ // Arms with pivot joints
+ const leftArm=new THREE.Group(), rightArm=new THREE.Group();
+ leftArm.position.set(-1.0,3.0,0); rightArm.position.set(1.0,3.0,0);
+ const la=box(.5,1.35,.55,shirt); la.position.y=-.62;
+ const ra=box(.5,1.35,.55,shirt); ra.position.y=-.62;
+ leftArm.add(la); rightArm.add(ra);
+ const handL=cyl(.24,.28,skin,8); handL.rotation.z=Math.PI/2; handL.position.y=-1.35;
+ const handR=handL.clone(); leftArm.add(handL); rightArm.add(handR);
+ rig.add(leftArm,rightArm);
+
+ // Pickaxe held in both hands
+ const pick=new THREE.Group();
+ const handle=cyl(.09,2.65,0x8a5a2d,8); handle.rotation.z=-.45; handle.position.y=1.1;
+ const metal=box(1.75,.16,.22,0xbfc6c8); metal.position.set(.18,2.25,0); metal.rotation.z=-.18;
+ const tip=cone(.16,.55,0xd4d9db,6); tip.rotation.z=Math.PI/2; tip.position.set(1.03,2.25,0); 
+ pick.add(handle,metal,tip);
+ pick.position.set(.45,1.55,-.62); pick.rotation.set(-.25,0,-.25);
+ player.add(pick);
+
+ player.userData.parts={rig,leftLeg,rightLeg,leftArm,rightArm,pick,torso};
+}
+
+function spawnOres(){
+ oreNodes.forEach(o=>worldGroup.remove(o.mesh));oreNodes=[];
+ const list=worlds[state.world].ore;
+ for(let i=0;i<32;i++){
+   const type=list[Math.floor(Math.random()*list.length)];
+   let x=(Math.random()-.5)*92,z=(Math.random()-.5)*82;
+   if(Math.hypot(x,z-12)<10) {i--;continue}
+   createOre(type,x,z);
+ }
+}
+function createOre(type,x,z){
+ const d=ores[type],g=new THREE.Group();g.position.set(x,.65,z);
+ const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(1.25,1),mat(0x3f464b));rock.scale.set(1.25,.9,1.1);rock.castShadow=rock.receiveShadow=true;g.add(rock);
+ const crystal=new THREE.Mesh(new THREE.ConeGeometry(.35,.95,6),mat(d.color));crystal.position.set(.35,.55,.25);crystal.rotation.z=.25;crystal.castShadow=true;g.add(crystal);
+ const crystal2=crystal.clone();crystal2.scale.set(.65,.8,.65);crystal2.position.set(-.45,.35,.05);g.add(crystal2);
+ const crack=new THREE.Mesh(new THREE.RingGeometry(.45,.62,8),new THREE.MeshBasicMaterial({color:0x111111,transparent:true,opacity:0,side:THREE.DoubleSide}));
+ crack.rotation.x=-Math.PI/2; crack.position.y=1.35; g.add(crack);
+ g.userData={type,hp:d.hp,max:d.hp,rock,crack};
+ worldGroup.add(g);oreNodes.push({mesh:g,type});
+}
+
+function spawnHitParticles(pos,color,count=8){
+ for(let i=0;i<count;i++){
+   const p=new THREE.Mesh(new THREE.BoxGeometry(.08,.08,.08),new THREE.MeshStandardMaterial({color}));
+   p.position.copy(pos).add(new THREE.Vector3((Math.random()-.5)*.5,.2+Math.random()*.6,(Math.random()-.5)*.5));
+   p.userData={life:.35+Math.random()*.35,vel:new THREE.Vector3((Math.random()-.5)*2,1+Math.random()*2,(Math.random()-.5)*2)};
+   scene.add(p);particles.push(p);
+ }
+}
+function updateEffects(dt){
+ for(let i=particles.length-1;i>=0;i--){
+   const p=particles[i];p.userData.life-=dt;p.userData.vel.y-=5*dt;p.position.addScaledVector(p.userData.vel,dt);p.scale.multiplyScalar(.97);
+   if(p.userData.life<=0){scene.remove(p);particles.splice(i,1)}
+ }
+ for(let i=hitEffects.length-1;i>=0;i--){
+   const e=hitEffects[i];e.life-=dt;e.mesh.scale.multiplyScalar(1+dt*4);e.mesh.material.opacity=Math.max(0,e.life/.25);
+   if(e.life<=0){scene.remove(e.mesh);hitEffects.splice(i,1)}
+ }
+}
+
+function nearestOre(){
+ let best=null,bd=5;
+ for(const o of oreNodes){const d=o.mesh.position.distanceTo(player.position);if(d<bd){bd=d;best=o}}
+ return best;
+}
+function mine(){
+ if(document.querySelector(".modal.show") || !player)return;
+ const o=nearestOre();if(!o){toast("Move closer to an ore node.");return}
+ if(player.userData.mining)return;
+ const d=ores[o.type], parts=player.userData.parts;
+ player.userData.mining=true;
+ const duration=Math.max(.24,.65/(1+state.upgrades.speed*.12));
+ parts.pick.rotation.set(-.35,0,-.25);
+ parts.leftArm.rotation.x=-.5; parts.rightArm.rotation.x=-.8;
+
+ // Impact occurs at the end of the swing.
+ setTimeout(()=>{
+   if(!o.mesh.parent){player.userData.mining=false;return}
+   const power=1+state.upgrades.power*2;
+   o.mesh.userData.hp-=power;
+   o.mesh.userData.crack.material.opacity=Math.min(.8,1-o.mesh.userData.hp/o.mesh.userData.max);
+   o.mesh.userData.rock.scale.multiplyScalar(.96);
+   cameraShake=.16;
+   spawnHitParticles(o.mesh.position,d.color,10);
+
+   const ring=new THREE.Mesh(
+     new THREE.RingGeometry(.18,.28,12),
+     new THREE.MeshBasicMaterial({color:d.color,transparent:true,opacity:.8,side:THREE.DoubleSide})
+   );
+   ring.position.copy(o.mesh.position).add(new THREE.Vector3(0,1.3,0));ring.rotation.x=-Math.PI/2;scene.add(ring);
+   hitEffects.push({mesh:ring,life:.25});
+
+   if(o.mesh.userData.hp<=0){
+     const amount=1+Math.floor(Math.random()*Math.max(1,state.upgrades.power/2+1));
+     if(totalInv()+amount>state.upgrades.backpack){
+       toast("Backpack full — sell your ore!");
+       o.mesh.userData.hp=d.hp;o.mesh.userData.rock.scale.set(1.25,.9,1.1);
+     }else{
+       state.inventory[o.type]+=amount;
+       gainXP(d.xp*amount);
+       if(o.type==="crystal")state.crystals+=amount;
+       if(o.type==="gold")state.gems+=amount;
+       if(o.type==="stone")state.quest+=amount;
+       toast(`+${amount} ${d.name}`);
+       spawnHitParticles(o.mesh.position,d.color,22);
+       worldGroup.remove(o.mesh);oreNodes=oreNodes.filter(x=>x!==o);
+       setTimeout(()=>createOre(o.type,(Math.random()-.5)*92,(Math.random()-.5)*82),1000);
+     }
+   } else {
+     toast(`${d.name}: ${Math.max(0,o.mesh.userData.hp)} HP`);
+   }
+   updateUI();save();
+   player.userData.mining=false;
+ },duration*700);
+
+ setTimeout(()=>{
+   if(parts.pick)parts.pick.rotation.set(.9,0,-1.0);
+   if(parts.leftArm)parts.leftArm.rotation.x=1.0;
+   if(parts.rightArm)parts.rightArm.rotation.x=1.25;
+ },duration*400);
+ setTimeout(()=>{
+   if(parts.pick)parts.pick.rotation.set(-.25,0,-.25);
+   if(parts.leftArm)parts.leftArm.rotation.x=0;
+   if(parts.rightArm)parts.rightArm.rotation.x=0;
+ },duration*1000);
+}
+
+function gainXP(n){state.xp+=n;while(state.xp>=xpNeed()){state.xp-=xpNeed();state.level++;toast(`⭐ Level ${state.level}!`)}}
+function totalInv(){return Object.values(state.inventory).reduce((a,b)=>a+b,0)}
+function sellAll(){
+ let total=0;for(const k in state.inventory){total+=state.inventory[k]*ores[k].value*state.upgrades.sell;state.inventory[k]=0}
+ if(!total){toast("Your backpack is empty.");return}
+ state.cash+=Math.floor(total);toast(`Sold ore for $${Math.floor(total)}!`);updateUI();save();
+}
+function upgrade(key){
+ const u=state.upgrades;
+ const defs={power:[`Pickaxe Power`,u.power,1800*Math.pow(1.65,u.power-1)],backpack:[`Backpack Size`,u.backpack,700*Math.pow(1.7,(u.backpack-20)/10)],sell:[`Sell Value`,u.sell,1200*Math.pow(1.7,u.sell-1)],speed:[`Mining Speed`,u.speed,900*Math.pow(1.7,u.speed-1)]};
+ const d=defs[key];if(state.cash<d[2]){toast("Not enough cash.");return}
+ state.cash-=Math.floor(d[2]); if(key==="backpack")u[key]+=10;else u[key]++;
+ toast(`${d[0]} upgraded!`);updateUI();save();openModal("upgrades");
+}
+function teleport(world){
+ const w=worlds[world];if(world===state.world){closeModal();return}
+ if(state.level<({Desert:3,Crystal:6,Volcano:10,Frozen:15}[world]||1)){toast("Level too low for this world.");return}
+ if(state.cash<w.cost){toast(`Need $${w.cost.toLocaleString()}.`);return}
+ state.cash-=w.cost;state.world=world;buildWorld();closeModal();toast(`Teleported to ${w.name}!`);updateUI();save();
+}
+
+function buildUI(){updateUI();
+ document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>openModal(b.dataset.open));
+ document.querySelector("#close").onclick=closeModal;document.querySelector("#modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
+ document.querySelector("#sellBtn").onclick=sellAll;document.querySelector("#teleBtn").onclick=()=>openModal("worlds");
+ // mobile joystick
+ let joy=false,cx=0,cy=0;const st=document.querySelector("#stick"),j=document.querySelector(".joy");
+ j.addEventListener("pointerdown",e=>{joy=true;cx=e.clientX;cy=e.clientY});
+ window.addEventListener("pointermove",e=>{if(!joy)return;let dx=e.clientX-cx,dy=e.clientY-cy;const len=Math.hypot(dx,dy),m=40;if(len>m){dx=dx/len*m;dy=dy/len*m}st.style.transform=`translate(${dx}px,${dy}px)`;keys.KeyW=dy<-10;keys.KeyS=dy>10;keys.KeyA=dx<-10;keys.KeyD=dx>10});
+ window.addEventListener("pointerup",()=>{if(joy){joy=false;st.style.transform="";keys.KeyW=keys.KeyS=keys.KeyA=keys.KeyD=false}});
+ document.querySelector("#mineTouch").onclick=mine;
+}
+function updateUI(){
+ document.querySelector("#cash").textContent=Math.floor(state.cash).toLocaleString();
+ document.querySelector("#gems").textContent=state.gems.toLocaleString();
+ document.querySelector("#crystals").textContent=state.crystals.toLocaleString();
+ document.querySelector("#level").textContent=state.level;
+ document.querySelector("#xptext").textContent=`${state.xp} / ${xpNeed()} XP`;
+ document.querySelector("#xpbar").style.width=`${Math.min(100,state.xp/xpNeed()*100)}%`;
+ document.querySelector("#questCount").textContent=`${Math.min(state.quest,50)} / 50`;
+ document.querySelector("#questBar").style.width=`${Math.min(100,state.quest/50*100)}%`;
+ if(state.quest>=50&&!state.questDone){state.questDone=true;state.cash+=1000;state.gems+=25;toast("Quest complete! +$1,000 +25 💎");}
+ const near=nearestOre();
+ document.querySelector('#hint').textContent=near?`⛏️ ${ores[near.type].name} • Click / E to mine`:`WASD to move • Mouse to look • Click / E to mine nearby ore`;
+ const hb=document.querySelector("#hotbar");hb.innerHTML=`<div class="slot active"><span class="icon">⛏️</span><small>Pickaxe</small></div>`;
+ for(const k of Object.keys(ores)){hb.innerHTML+=`<div class="slot"><span class="icon">${ores[k].icon}</span><small>${state.inventory[k]}</small></div>`}
+}
+function openModal(kind){
+ const body=document.querySelector("#modalBody"),title=document.querySelector("#modalTitle");body.innerHTML="";
+ const modal=document.querySelector("#modal");modal.classList.add("show");
+ if(kind==="inventory"){title.textContent="🎒 Inventory";body.innerHTML=`<p>Capacity: <b>${totalInv()} / ${state.upgrades.backpack}</b></p><div class="grid">${Object.entries(ores).map(([k,v])=>`<div class="card"><h3>${v.icon} ${v.name}</h3><p>${state.inventory[k]} pieces</p><p>Base value: $${v.value}</p></div>`).join("")}</div>`}
+ if(kind==="shop"){title.textContent="🧰 Shop";body.innerHTML=`<div class="grid"><div class="card"><h3>Starter Pickaxe</h3><p>Your character starts with it.</p><button class="bigbtn" style="width:100%" onclick="toast('You already own the starter pickaxe.')">Owned</button></div><div class="card"><h3>World Tickets</h3><p>Unlock new mining zones by leveling up and paying the teleport fee.</p></div></div>`}
+ if(kind==="upgrades"){title.textContent="⬆️ Upgrades";const u=state.upgrades;const rows=[["power","⛏️ Pickaxe Power",u.power,1800*Math.pow(1.65,u.power-1),"+2 mining damage"],["backpack","🎒 Backpack Size",u.backpack,700*Math.pow(1.7,(u.backpack-20)/10),"+10 slots"],["sell","🪙 Sell Value",u.sell,1200*Math.pow(1.7,u.sell-1),"+15% sell value"],["speed","⚡ Mining Speed",u.speed,900*Math.pow(1.7,u.speed-1),"+10% speed"]];body.innerHTML=`<div class="grid">${rows.map(r=>`<div class="card"><h3>${r[1]}</h3><p>Level ${r[2]} • ${r[4]}</p><button class="bigbtn" style="width:100%" onclick="upgrade('${r[0]}')">$${Math.floor(r[3]).toLocaleString()}</button></div>`).join("")}</div>`}
+ if(kind==="quests"){title.textContent="📜 Quests";body.innerHTML=`<div class="card"><h3>⛏️ Mine 50 Stone</h3><p>Progress: ${Math.min(state.quest,50)} / 50</p><p>Reward: 🪙 $1,000 + 💎 25</p><b>${state.questDone?"COMPLETED":"ACTIVE"}</b></div>`}
+ if(kind==="worlds"){title.textContent="🌍 Worlds";body.innerHTML=`<div class="grid">${Object.entries(worlds).map(([k,w])=>`<div class="card"><h3>${w.name}</h3><p>${w.difficulty}</p><p>Teleport fee: $${w.cost.toLocaleString()}</p><button class="bigbtn ${k===state.world?"":"tele"}" style="width:100%" onclick="teleport('${k}')">${k===state.world?"Current":"Teleport"}</button></div>`).join("")}</div>`}
+}
+function closeModal(){document.querySelector("#modal").classList.remove("show")}
+
+window.upgrade=upgrade;window.teleport=teleport;window.toast=toast;
+
+function animate(){
+ requestAnimationFrame(animate);
+ const dt=Math.min(.05,clock.getDelta());
+ updateEffects(dt);
+
+ if(player&&!document.querySelector(".modal.show")){
+   const move=new THREE.Vector3();
+   if(keys.KeyW||keys.ArrowUp)move.z-=1;if(keys.KeyS||keys.ArrowDown)move.z+=1;
+   if(keys.KeyA||keys.ArrowLeft)move.x-=1;if(keys.KeyD||keys.ArrowRight)move.x+=1;
+   const moving=move.lengthSq()>0;
+   if(moving){
+     move.normalize();
+     const speed=5.5*(1+state.upgrades.speed*.06);
+     move.applyAxisAngle(new THREE.Vector3(0,1,0),yaw);
+     player.position.addScaledVector(move,speed*dt);
+     player.rotation.y=Math.atan2(move.x,move.z);
+     player.userData.walkTime+=dt*10;
+   }
+   const p=player.userData.parts;
+   if(p&&!player.userData.mining){
+     const swing=moving?Math.sin(player.userData.walkTime)*.55:0;
+     p.leftLeg.rotation.x=swing;p.rightLeg.rotation.x=-swing;
+     p.leftArm.rotation.x=-swing*.55;p.rightArm.rotation.x=swing*.55;
+     p.torso.rotation.z=moving?Math.sin(player.userData.walkTime*2)*.025:0;
+   }
+   player.position.x=Math.max(-60,Math.min(60,player.position.x));
+   player.position.z=Math.max(-55,Math.min(55,player.position.z));
+
+   const target=player.position.clone().add(new THREE.Vector3(0,2.5,0));
+   const off=new THREE.Vector3(Math.sin(yaw)*9,5.0+pitch*4,Math.cos(yaw)*9);
+   const desired=target.clone().add(off);
+   if(cameraShake>0){
+     desired.x+=(Math.random()-.5)*cameraShake;
+     desired.y+=(Math.random()-.5)*cameraShake;
+     desired.z+=(Math.random()-.5)*cameraShake;
+     cameraShake=Math.max(0,cameraShake-dt);
+   }
+   camera.position.lerp(desired,1-Math.pow(.001,dt));
+   camera.lookAt(target);
+ }
+ renderer.render(scene,camera);
+}
+</script>
+</body>
+</html>
