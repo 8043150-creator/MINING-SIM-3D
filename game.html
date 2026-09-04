@@ -2,288 +2,182 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Mining Sim: Deep Earth</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deep Earth 3D - Mining Adventure</title>
 <style>
-*{box-sizing:border-box}
-:root{--bg:#07090d;--panel:#10151d;--panel2:#151c27;--line:#273241;--orange:#ff7a33;--gold:#ffd166;--cyan:#55d6ff;--green:#66e3a2;--red:#ff6262;--purple:#b58cff;--text:#f5f7fb;--muted:#91a0b3}
-body{margin:0;background:radial-gradient(circle at 50% -15%,#3b2113,#0a0d12 42%,#05070a 80%);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
-button{font:inherit}.header{position:sticky;top:0;z-index:20;background:rgba(7,9,13,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 18px}.header-inner{max-width:1250px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px}.logo{font-size:24px;font-weight:1000;letter-spacing:2px;color:var(--orange)}.logo span{color:var(--gold)}
-.money{display:flex;gap:8px;flex-wrap:wrap}.money-box{background:#0d1219;border:1px solid var(--line);border-radius:12px;padding:7px 13px;min-width:110px}.money-label{font-size:10px;color:var(--muted);text-transform:uppercase}.money-value{font-size:18px;font-weight:900;margin-top:2px}
-.container{max-width:1250px;margin:auto;padding:20px 16px 55px}.tabs{display:flex;gap:7px;margin-bottom:18px;overflow:auto}.tab{border:1px solid var(--line);background:#0e131a;color:var(--muted);padding:10px 16px;border-radius:10px;font-weight:900;cursor:pointer;white-space:nowrap}.tab.active,.tab:hover{color:#fff;border-color:var(--orange);background:#27160e}.page{display:none}.page.active{display:block}
-.hero{margin-bottom:18px}.eyebrow{color:var(--orange);font-size:12px;font-weight:900;letter-spacing:2px}.title{font-size:clamp(30px,6vw,54px);font-weight:1000;line-height:.95;margin:7px 0}.subtitle{color:var(--muted);margin:0}
-.grid{display:grid;grid-template-columns:1.45fr .85fr;gap:16px}.card{background:linear-gradient(145deg,#111822,#0b0f15);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 16px 60px rgba(0,0,0,.22)}.mine-card{text-align:center;overflow:hidden}
-.depth{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:var(--muted);font-size:13px}.depth strong{color:#fff}.depthbar{height:8px;background:#080b10;border-radius:10px;overflow:hidden}.depthbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--gold),var(--cyan));transition:.3s}
-.rock-button{position:relative;width:min(100%,590px);height:390px;margin:14px auto;border:2px solid #4a3a2c;border-radius:24px;background:radial-gradient(circle at 48% 40%,#4c4136,#1a1d21 55%,#0b0e12 80%);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .07s,border-color .2s;touch-action:manipulation;user-select:none;overflow:hidden}.rock-button:hover{border-color:var(--orange);box-shadow:0 0 60px rgba(255,122,51,.13)}.rock-button:active{transform:scale(.975)}.rock-button svg{width:82%;height:82%;pointer-events:none;filter:drop-shadow(0 0 22px rgba(255,180,70,.18))}.rock-text{position:absolute;bottom:15px;left:0;right:0;font-size:13px;color:#ddd;font-weight:900;pointer-events:none}
-.ore-label{color:var(--muted);font-size:11px;text-transform:uppercase}.ore-big{font-size:40px;font-weight:1000;color:var(--gold)}.sell{width:100%;border:0;border-radius:12px;padding:14px;background:linear-gradient(135deg,#ff7430,#ffc15e);color:#1b0c05;font-weight:1000;cursor:pointer;font-size:16px;margin-top:13px}.sell:hover{filter:brightness(1.08)}
-.info-row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #1f2934;padding:11px 0}.info-row span:first-child{color:var(--muted)}.info-row strong{color:#fff}.combo{margin-top:14px;padding:13px;border:1px solid #55401e;background:#1b170e;border-radius:12px}.combo strong{color:var(--gold);font-size:22px}.xp{height:9px;background:#080b10;border-radius:20px;overflow:hidden;margin-top:7px}.xp i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--gold));transition:.2s}
-.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:15px}.section-head h2{margin:0;font-size:27px}.section-head p{margin:4px 0 0;color:var(--muted)}
-.upgrades,.zone-grid,.achievement-grid,.quest-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.upgrade,.zone,.achievement,.quest{border:1px solid var(--line);border-radius:15px;padding:16px;background:#0d131b}.upgrade h3,.zone h3,.achievement h3,.quest h3{margin:0 0 5px}.upgrade p,.zone p,.achievement p,.quest p{color:var(--muted);font-size:13px;min-height:34px;margin:0 0 11px}.level{font-size:11px;color:var(--gold);margin-bottom:8px}.buy,.zone button,.quest button{width:100%;padding:11px;border-radius:10px;border:1px solid #354151;background:#18212c;color:#fff;font-weight:900;cursor:pointer}.buy.can,.zone button.can,.quest button.can{background:linear-gradient(135deg,#ff7a33,#ffc15e);color:#180d06;border-color:transparent}.buy:disabled,.zone button:disabled,.quest button:disabled{opacity:.55;cursor:not-allowed}
-.prestige{margin-top:15px;border:1px solid #4d3d6b;background:linear-gradient(145deg,#19152a,#0e1019);border-radius:15px;padding:18px}.prestige h3{margin:0 0 5px;color:var(--purple)}.prestige p{color:var(--muted)}.prestige button{padding:11px 17px;border:1px solid #59477b;background:#171325;color:#fff;border-radius:10px;font-weight:900;cursor:pointer}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{padding:17px;background:#0d131b;border:1px solid var(--line);border-radius:14px}.stat small{color:var(--muted);display:block}.stat strong{font-size:25px;display:block;margin-top:5px}.reset{margin-top:16px;border:1px solid #5c2824;background:#24100f;color:#ff9d96;border-radius:10px;padding:10px 15px;font-weight:800;cursor:pointer}
-.event{margin-top:15px;padding:15px;border-radius:14px;border:1px solid #3c334e;background:linear-gradient(135deg,#171322,#10141c);display:none}.event.show{display:block}.event strong{color:var(--purple)}.event button{margin-top:9px;padding:9px 14px;border:0;border-radius:9px;background:var(--purple);color:#100b17;font-weight:900;cursor:pointer}
-.badge{display:inline-block;padding:4px 8px;border-radius:20px;background:#1c2631;color:var(--muted);font-size:10px;font-weight:900}.badge.done{background:#173529;color:var(--green)}.ore-types{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.ore-chip{padding:6px 9px;border:1px solid var(--line);border-radius:20px;font-size:11px;color:var(--muted)}.ore-chip b{color:#fff}
-.float{position:fixed;font-size:24px;font-weight:1000;color:var(--gold);animation:float .7s ease-out forwards;pointer-events:none;z-index:50;text-shadow:0 2px 12px #000}@keyframes float{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-85px) scale(1.15)}}.hit{animation:hit .16s ease}@keyframes hit{50%{filter:brightness(1.6);transform:scale(.98)}}.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#141b24;border:1px solid var(--orange);padding:11px 16px;border-radius:12px;font-weight:900;z-index:60;transition:.25s;box-shadow:0 10px 35px #000}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.compact-zone{padding:12px;border:1px solid var(--line);border-radius:12px;background:#0d131b}.compact-zone h4{margin:0 0 4px}.compact-zone p{margin:0 0 8px;color:var(--muted);font-size:12px}.compact-zone button{width:100%;padding:8px;border-radius:9px;border:1px solid #354151;background:#18212c;color:#fff;font-weight:900;cursor:pointer}.compact-zone button.can{background:linear-gradient(135deg,#ff7a33,#ffc15e);color:#180d06;border-color:transparent}.compact-quest{padding:11px;border:1px solid var(--line);border-radius:12px;background:#0d131b}.compact-quest h4{margin:0 0 4px}.compact-quest p{margin:0;color:var(--muted);font-size:12px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:70;padding:20px}.modal.show{display:flex}.modal-box{width:min(560px,100%);background:#10161f;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 30px 100px #000}.modal-box h2{margin-top:0}.close{float:right;border:0;background:#202a36;color:#fff;border-radius:8px;padding:7px 10px;cursor:pointer}
-@media(max-width:850px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.header-inner{align-items:flex-start;flex-direction:column}.money{width:100%}.money-box{flex:1}.container{padding:14px 9px 35px}.rock-button{height:290px}.upgrades,.zone-grid,.achievement-grid,.quest-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#78bde8}
+#game{position:fixed;inset:0}canvas{display:block}
+#hud{position:fixed;inset:0;pointer-events:none;color:white;text-shadow:0 2px 3px #000;z-index:4}
+.top{display:flex;justify-content:space-between;gap:12px;padding:14px}
+.currency{display:flex;gap:8px;flex-wrap:wrap}.pill{background:#102019e8;border:2px solid #ffffff38;border-radius:13px;padding:7px 13px;min-width:105px;box-shadow:0 5px 20px #0005}
+.small{font-size:10px;color:#d8e3dc;text-transform:uppercase}.big{font-size:19px;font-weight:900}
+.quest{width:245px;background:#102019e8;border:2px solid #ffffff38;border-radius:14px;padding:12px}
+.bar{height:8px;background:#08100c;border-radius:9px;margin-top:7px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:#ffd34f}
+#bottom{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:8px;align-items:end}
+.hot{width:62px;height:62px;background:#111b18e8;border:2px solid #ffffff44;border-radius:12px;text-align:center;padding:6px;font-size:12px}.hot.sel{border-color:#ffd34f;box-shadow:0 0 18px #ffd34f66}.hot b{font-size:22px;display:block}
+#buttons{position:absolute;right:16px;bottom:18px;width:150px;pointer-events:auto}
+button{border:0;border-radius:11px;padding:11px;width:100%;margin-top:7px;font-weight:900;cursor:pointer;box-shadow:0 5px 15px #0004}
+.green{background:#55d879;color:#08200e}.purple{background:#a96cff;color:white}.dark{background:#16231e;color:white;border:1px solid #ffffff33}
+#hint{position:absolute;left:50%;bottom:92px;transform:translateX(-50%);background:#102019dd;border:1px solid #ffffff33;border-radius:12px;padding:9px 15px;font-size:13px;white-space:nowrap}
+#toast{position:absolute;top:22%;left:50%;transform:translate(-50%,-10px);background:#102019ef;border:2px solid #ffd34f;padding:12px 20px;border-radius:12px;font-weight:900;opacity:0;transition:.2s}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:20;pointer-events:auto}.modal.show{display:flex}.box{width:min(520px,92vw);max-height:80vh;overflow:auto;background:#101a16;border:2px solid #ffffff2b;border-radius:18px;padding:20px;color:white;box-shadow:0 30px 100px #000}
+.card{background:#18261fe8;border:1px solid #ffffff22;border-radius:12px;padding:12px;margin:8px 0}.card h3{margin:0 0 4px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.row button{width:auto;padding:8px 12px;margin:0;background:#55d879}
 </style>
 </head>
 <body>
-<header class="header"><div class="header-inner">
-<div class="logo">MINING <span>SIM</span></div>
-<div class="money">
-<div class="money-box"><div class="money-label">Cash</div><div class="money-value" id="cash">$0</div></div>
-<div class="money-box"><div class="money-label">Ore</div><div class="money-value" id="ore">0</div></div>
-<div class="money-box"><div class="money-label">Level</div><div class="money-value" id="topLevel">1</div></div>
-<div class="money-box"><div class="money-label">Shards</div><div class="money-value" id="topShards">0</div></div>
-</div></div></header>
-
-<main class="container">
-<nav class="tabs">
-<button class="tab active" data-page="mine">⛏ MINE</button><button class="tab" data-page="shop">🛒 SHOP</button><button class="tab" data-page="stats">📊 STATS</button>
-</nav>
-
-<section id="mine" class="page active">
-<div class="hero"><div class="eyebrow">DEEP EARTH EXPEDITION</div><div class="title">GO DEEPER.</div><p class="subtitle">Mine rare materials, build your rig, unlock new zones and chase the next jackpot.</p></div>
-<div class="grid">
-<div class="card mine-card">
-<div class="depth"><span>Current Zone: <strong id="zoneName">Surface Mine</strong></span><span>Depth: <strong id="depth">10m</strong></span></div>
-<div class="depthbar"><i id="depthBar"></i></div>
-<button class="rock-button" id="rockButton" aria-label="Mine ore">
-<svg viewBox="0 0 500 360">
-<defs><radialGradient id="rock"><stop offset="0" stop-color="#77706a"/><stop offset=".55" stop-color="#393b3e"/><stop offset="1" stop-color="#15181c"/></radialGradient><filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-<path d="M75 280 48 190 95 85 205 38 350 58 438 145 405 270 300 325 155 320Z" fill="url(#rock)" stroke="#78736d" stroke-width="7"/>
-<path d="M112 180 170 110 225 155 285 100 355 165 315 245 230 210 170 270Z" fill="none" stroke="#ff9a3d" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
-<path d="M125 180 172 122M226 153 284 103M313 245 355 166" stroke="#ffd166" stroke-width="7" stroke-linecap="round"/>
-<circle cx="120" cy="125" r="8" fill="#ffd166"/><circle cx="390" cy="135" r="7" fill="#ff7a33"/>
-</svg><div class="rock-text">CLICK / TAP TO MINE • SPACE ALSO WORKS</div>
-</button>
-<div class="ore-label">Current Ore</div><div class="ore-big" id="oreBig">0</div>
-<div class="ore-types" id="oreTypes"></div>
-<button class="sell" id="sellButton">💰 SELL ALL ORE</button>
-<div class="event" id="eventBox"><strong id="eventTitle">EVENT</strong><div id="eventText"></div><button id="eventButton">CLAIM</button></div>
+<div id="game"></div>
+<div id="hud">
+  <div class="top">
+    <div class="currency">
+      <div class="pill"><div class="small">Cash</div><div class="big" id="cash">$0</div></div>
+      <div class="pill"><div class="small">Backpack</div><div class="big" id="bag">0 / 25</div></div>
+      <div class="pill"><div class="small">Level</div><div class="big" id="level">1</div></div>
+      <div class="pill"><div class="small">Pickaxe</div><div class="big" id="power">1</div></div>
+    </div>
+    <div class="quest"><b>🎯 ACTIVE QUEST</b><div id="questText">Mine 25 rocks</div><div class="bar"><i id="questBar"></i></div></div>
+  </div>
+  <div id="hint">WASD / Arrow Keys to move • Mouse drag to rotate • Click a rock to mine</div>
+  <div id="bottom">
+    <div class="hot sel"><b>⛏️</b>Pickaxe</div>
+    <div class="hot"><b>🪨</b>Ore</div><div class="hot"><b>💎</b>Rare</div>
+  </div>
+  <div id="buttons"><button class="green" id="sell">💰 SELL ORE</button><button class="purple" id="worlds">🌎 WORLDS</button><button class="dark" id="upgrades">⚒ UPGRADES</button></div>
+  <div id="toast"></div>
 </div>
+<div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
 
-<aside class="card">
-<h2 style="margin-top:0">YOUR RIG</h2>
-<div class="info-row"><span>Pickaxe Power</span><strong id="power">1</strong></div>
-<div class="info-row"><span>Auto Mining</span><strong id="auto">0/s</strong></div>
-<div class="info-row"><span>Ore Value</span><strong id="value">$1.00</strong></div>
-<div class="info-row"><span>Sale Multiplier</span><strong id="mult">x1.00</strong></div>
-<div class="info-row"><span>Crit Chance</span><strong id="crit">5%</strong></div>
-<div class="info-row"><span>Energy</span><strong id="energy">100/100</strong></div>
-<div class="combo">COMBO <strong id="combo">x1.00</strong><div class="xp"><i id="xpBar"></i></div><div style="color:var(--muted);font-size:12px;margin-top:6px">LEVEL <span id="level">1</span> • XP <span id="xpText">0/10</span></div></div>
-<p style="color:var(--muted);font-size:13px">⚡ Energy slowly refills. Critical hits give bonus XP. Keep your combo alive for faster progression.</p>
-</aside>
-</div>
-</section>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-<section id="shop" class="page">
-<div class="section-head"><div><h2>UPGRADES</h2><p>Turn your starter rig into a mining machine.</p></div><strong id="shopCash">$0</strong></div>
-<div class="upgrades">
-<div class="upgrade"><h3>⛏ Pickaxe Power</h3><p>More ore per manual hit.</p><div class="level">LEVEL <span id="pickaxeLvl">0</span></div><button class="buy" data-upgrade="pickaxe"></button></div>
-<div class="upgrade"><h3>🤖 Drill Rig</h3><p>Automatically mines every second.</p><div class="level">LEVEL <span id="drillLvl">0</span></div><button class="buy" data-upgrade="drill"></button></div>
-<div class="upgrade"><h3>🔥 Furnace</h3><p>Boosts the value of every sale.</p><div class="level">LEVEL <span id="furnaceLvl">0</span></div><button class="buy" data-upgrade="furnace"></button></div>
-<div class="upgrade"><h3>🚚 Conveyor Belt</h3><p>Automatically sells stored ore.</p><div class="level">LEVEL <span id="conveyorLvl">0</span></div><button class="buy" data-upgrade="conveyor"></button></div>
-<div class="upgrade"><h3>🍀 Lucky Vein</h3><p>Raises your critical-hit chance.</p><div class="level">LEVEL <span id="luckLvl">0</span></div><button class="buy" data-upgrade="luck"></button></div>
-<div class="upgrade"><h3>🔋 Battery Pack</h3><p>Raises max energy and refill speed.</p><div class="level">LEVEL <span id="batteryLvl">0</span></div><button class="buy" data-upgrade="battery"></button></div>
-<div class="upgrade"><h3>🧲 Ore Magnet</h3><p>Increases ore quantity from every hit.</p><div class="level">LEVEL <span id="magnetLvl">0</span></div><button class="buy" data-upgrade="magnet"></button></div>
-<div class="upgrade"><h3>💎 Gem Scanner</h3><p>Improves rare-ore discovery.</p><div class="level">LEVEL <span id="scannerLvl">0</span></div><button class="buy" data-upgrade="scanner"></button></div>
-</div>
-<div class="card" style="margin-top:15px">
-<h3 style="margin-top:0">🌎 MINE DEPTH</h3>
-<p style="color:var(--muted);font-size:13px">Unlock deeper areas while keeping the same shop layout.</p>
-<div id="compactZones" class="upgrades"></div>
-</div>
-<div class="card" style="margin-top:15px">
-<h3 style="margin-top:0">🎯 QUESTS & 🏆 ACHIEVEMENTS</h3>
-<div id="compactQuests" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px"></div>
-</div>
-<div class="prestige"><h3>♻ REBIRTH: CORE MELTDOWN</h3><p>Reset your cash and upgrades to earn permanent <b>Shards</b>. Each shard gives +5% sale value and +2% mining power.</p><p>Available now: <strong id="shardsGain">0 Shards</strong></p><button id="prestigeButton">MELT DOWN</button></div>
-</section>
-
-<section id="world" class="page" style="display:none">
-<div class="section-head"><div><h2>WORLD MAP</h2><p>Unlock deeper mines with better ore and bigger risks.</p></div></div>
-<div class="zone-grid" id="zoneGrid"></div>
-</section>
-
-<section id="quests" class="page" style="display:none">
-<div class="section-head"><div><h2>QUEST BOARD</h2><p>Complete objectives for bonus cash, XP and permanent rewards.</p></div></div>
-<div class="quest-grid" id="questGrid"></div>
-<div class="section-head" style="margin-top:22px"><div><h2>ACHIEVEMENTS</h2><p>Milestones worth chasing.</p></div></div>
-<div class="achievement-grid" id="achievementGrid"></div>
-</section>
-
-<section id="stats" class="page">
-<div class="section-head"><div><h2>STATS</h2><p>Your lifetime mining record.</p></div></div>
-<div class="stats">
-<div class="stat"><small>Total Cash Earned</small><strong id="totalCash">$0</strong></div>
-<div class="stat"><small>Total Ore Mined</small><strong id="totalOre">0</strong></div>
-<div class="stat"><small>Rock Clicks</small><strong id="clicks">0</strong></div>
-<div class="stat"><small>Critical Hits</small><strong id="crits">0</strong></div>
-<div class="stat"><small>Rare Ores Found</small><strong id="rareOres">0</strong></div>
-<div class="stat"><small>Highest Combo</small><strong id="bestCombo">x1.00</strong></div>
-<div class="stat"><small>Shards</small><strong id="shards">0</strong></div>
-<div class="stat"><small>Current Level</small><strong id="statLevel">1</strong></div>
-</div>
-<button class="reset" id="resetButton">RESET ALL PROGRESS</button>
-</section>
-</main>
-
-<div class="toast" id="toast"></div>
-<div class="modal" id="modal"><div class="modal-box"><button class="close" id="closeModal">✕</button><h2 id="modalTitle">Unlocked!</h2><p id="modalText"></p></div></div>
-
-<script>
-const SAVE_KEY="mining-sim-deep-earth-v1";
-const zones=[
-{name:"Surface Mine",depth:10,need:0,mult:1,ore:"Stone",color:"#aaa"},
-{name:"Copper Caverns",depth:120,need:250,mult:1.8,ore:"Copper",color:"#d9824b"},
-{name:"Crystal Caves",depth:420,need:1500,mult:3.5,ore:"Crystal",color:"#7fdcff"},
-{name:"Magma Core",depth:900,need:7500,mult:7,ore:"Ruby",color:"#ff5d58"},
-{name:"Void Depths",depth:1800,need:30000,mult:15,ore:"Voidite",color:"#b58cff"}
+const SAVE="deep-earth-3d-v2";
+const worlds=[
+ {name:"Green Meadows",need:0,mult:1,ground:0x62a94d,rock:0x59616a,rare:"Stone",sky:0x8fd0f5},
+ {name:"Desert Mines",need:500,mult:2.2,ground:0xc99654,rock:0x806044,rare:"Copper",sky:0xf1bd72},
+ {name:"Crystal Caverns",need:3000,mult:5,ground:0x273b53,rock:0x43516b,rare:"Crystal",sky:0x17243b},
+ {name:"Volcano Depths",need:15000,mult:10,ground:0x39201b,rock:0x51413e,rare:"Ruby",sky:0x24100d},
+ {name:"Frozen Peaks",need:60000,mult:22,ground:0xbfd4df,rock:0x687988,rare:"Voidite",sky:0x8cb5d5}
 ];
-const oreTypes=[
-{name:"Stone",chance:0,value:1,zone:0},
-{name:"Copper",chance:.16,value:3,zone:1},
-{name:"Crystal",chance:.09,value:10,zone:2},
-{name:"Ruby",chance:.055,value:28,zone:3},
-{name:"Voidite",chance:.025,value:80,zone:4},
-{name:"Ancient Core",chance:.008,value:250,zone:4}
+const oreDefs=[
+ {name:"Stone",value:1,chance:.70,color:0x8b949e},
+ {name:"Copper",value:4,chance:.18,color:0xd8793f},
+ {name:"Crystal",value:12,chance:.07,color:0x69d8ff},
+ {name:"Ruby",value:35,chance:.04,color:0xff4e59},
+ {name:"Voidite",value:100,chance:.01,color:0xb786ff}
 ];
-const defaultState={
-cash:0,ore:0,inventory:{},zone:0,pickaxe:0,drill:0,furnace:0,conveyor:0,luck:0,battery:0,magnet:0,scanner:0,
-shards:0,totalCash:0,totalOre:0,clicks:0,crits:0,rareOres:0,level:1,xp:0,combo:1,bestCombo:1,lastClick:0,lastSeen:Date.now(),
-energy:100,quests:{},achievements:{},event:null,eventEnds:0,claimedDaily:false
-};
-let state={...defaultState,inventory:{},quests:{},achievements:{}};
-try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s)state={...defaultState,...s,inventory:{...(s.inventory||{})},quests:{...(s.quests||{})},achievements:{...(s.achievements||{})}}}catch(e){}
-
-const $=id=>document.getElementById(id);
-function money(n){return "$"+Math.floor(n).toLocaleString()}
-function num(n){return Math.floor(n).toLocaleString()}
-function save(){state.lastSeen=Date.now();try{localStorage.setItem(SAVE_KEY,JSON.stringify(state))}catch(e){}}
-function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove("show"),1800)}
-function floatText(text,x,y){const e=document.createElement("div");e.className="float";e.textContent=text;e.style.left=x+"px";e.style.top=y+"px";document.body.appendChild(e);setTimeout(()=>e.remove(),750)}
-function clickPower(){return (1+state.pickaxe*2)*(1+state.shards*.02)*(1+state.magnet*.10)}
-function maxEnergy(){return 100+state.battery*25}
-function autoRate(){return state.drill*.9*(1+state.shards*.02)}
-function saleMultiplier(){return (1+state.furnace*.20+state.shards*.05)*(zones[state.zone].mult)}
-function conveyorRate(){return state.conveyor*.65}
-function critChance(){return Math.min(.65,.05+state.luck*.04)}
-function xpNeeded(){return 10+(state.level-1)*18}
-function upgradeCost(type){const base={pickaxe:10,drill:50,furnace:75,conveyor:100,luck:150,battery:180,magnet:230,scanner:350}[type];return Math.floor(base*Math.pow(1.52,state[type]))}
-function addXP(n){state.xp+=n;while(state.xp>=xpNeeded()){state.xp-=xpNeeded();state.level++;state.energy=Math.min(maxEnergy(),state.energy+15);toast("⭐ LEVEL UP! Level "+state.level)}}
-function chooseOre(){let eligible=oreTypes.filter(o=>o.zone<=state.zone);let scannerBonus=state.scanner*.018;let roll=Math.random();let rare=eligible.slice(1).sort((a,b)=>b.value-a.value);for(const o of rare){let chance=o.chance+scannerBonus;if(roll<chance){state.rareOres++;return o}}return zones[state.zone].ore==="Stone"?oreTypes[0]:eligible[Math.min(1+Math.floor(Math.random()*eligible.length),eligible.length-1)]}
-function mine(){
-if(state.energy<=0){toast("🔋 Out of energy! Wait for a refill.");return}
-const now=Date.now();
-state.combo=(now-state.lastClick<1500)?Math.min(2.5,state.combo+.05):1;
-state.lastClick=now;state.bestCombo=Math.max(state.bestCombo,state.combo);
-state.energy=Math.max(0,state.energy-1);
-let amount=clickPower()*state.combo;
-let crit=Math.random()<critChance();if(crit){amount*=5;state.crits++}
-let oreType=chooseOre();let units=Math.max(.2,amount/(1+oreType.value*.025));
-state.ore+=units;state.totalOre+=units;state.inventory[oreType.name]=(state.inventory[oreType.name]||0)+units;state.clicks++;
-addXP(Math.max(1,Math.floor(amount)));
-questProgress("mine",1);questProgress("ore",units);if(crit)questProgress("crit",1);
-const b=$("rockButton");b.classList.remove("hit");void b.offsetWidth;b.classList.add("hit");const r=b.getBoundingClientRect();
-floatText((crit?"CRIT! ":"+")+num(units)+" "+oreType.name,r.left+r.width/2,r.top+r.height*.42);
-checkAchievements();update();
-}
-function sellOre(){
-if(state.ore<=0){toast("Mine some ore first!");return}
-let earned=state.ore*saleMultiplier();let sold=state.ore;state.cash+=earned;state.totalCash+=earned;state.ore=0;questProgress("sell",sold);toast("💰 SOLD "+num(sold)+" ORE FOR "+money(earned));checkAchievements();save();update()
-}
-function buy(type){
-let cost=upgradeCost(type);if(state.cash<cost){toast("Need "+money(cost-state.cash)+" more cash.");return}
-state.cash-=cost;state[type]++;toast("⚙ "+type.toUpperCase()+" upgraded!");save();update()
-}
-function unlockZone(i){
-if(i<=state.zone){toast("Already unlocked.");return}
-if(state.totalCash<zones[i].need){toast("You need "+money(zones[i].need-state.totalCash)+" more lifetime cash.");return}
-state.zone=i;toast("🌎 NEW ZONE: "+zones[i].name+"!");showModal("Zone Unlocked!",zones[i].name+" is now available. Ore is worth much more here.");save();update()
-}
-function prestige(){
-let possible=Math.floor(Math.sqrt(state.totalCash/12000));let gain=possible-state.shards;
-if(gain<=0){toast("Earn more lifetime cash to gain a new shard.");return}
-if(!confirm("Melt down your current cash and upgrades for "+gain+" Shard(s)?"))return;
-const keep={shards:possible,totalCash:state.totalCash,totalOre:state.totalOre,clicks:state.clicks,crits:state.crits,rareOres:state.rareOres,bestCombo:state.bestCombo,level:1,xp:0,zone:0,energy:100,lastSeen:Date.now(),inventory:{},quests:state.quests,achievements:state.achievements};
-state={...defaultState,...keep};toast("♻ MELTDOWN COMPLETE! Permanent power increased.");save();update()
-}
-function questProgress(type,amount){
-const qs=questList();qs.forEach((q,i)=>{if(q.type===type&&!state.quests[i]){q.current=Math.min(q.goal,(state.quests[i+"p"]||0)+amount);state.quests[i+"p"]=q.current;if(q.current>=q.goal){state.quests[i]=true;state.cash+=q.reward;addXP(q.xp);toast("🎯 QUEST COMPLETE: "+q.name+" +"+money(q.reward))}}})
-}
-function questList(){return[
-{name:"First Strike",type:"mine",goal:25,reward:100,xp:20,desc:"Mine 25 times."},
-{name:"Rock Crusher",type:"mine",goal:250,reward:750,xp:80,desc:"Mine 250 times."},
-{name:"Cash Out",type:"sell",goal:100,reward:500,xp:50,desc:"Sell 100 ore."},
-{name:"Lucky Day",type:"crit",goal:10,reward:1200,xp:120,desc:"Land 10 critical hits."}
-]}
-function achievementList(){return[
-{name:"Starter",desc:"Mine your first ore.",test:()=>state.totalOre>=1},
-{name:"Deep Diver",desc:"Reach Crystal Caves.",test:()=>state.zone>=2},
-{name:"Millionaire",desc:"Earn $1,000,000 lifetime cash.",test:()=>state.totalCash>=1e6},
-{name:"Jackpot",desc:"Score 25 critical hits.",test:()=>state.crits>=25},
-{name:"Collector",desc:"Find 5 rare ores.",test:()=>state.rareOres>=5},
-{name:"Combo Master",desc:"Reach x2.00 combo.",test:()=>state.bestCombo>=2}
-]}
-function checkAchievements(){achievementList().forEach((a,i)=>{if(!state.achievements[i]&&a.test()){state.achievements[i]=true;state.cash+=500;toast("🏆 ACHIEVEMENT: "+a.name+" +$500")}})}
-function startRandomEvent(){
-if(state.event||Math.random()>0.001)return;
-const events=[
-{title:"💎 GOLDEN VEIN",text:"A glowing vein appeared! Mine it before it disappears for a huge bonus.",reward:()=>{let x=state.level*250+1000;state.cash+=x;state.totalCash+=x;toast("💎 Golden Vein paid "+money(x))}},
-{title:"🦾 DRILL SURGE",text:"Your drill goes crazy for 20 seconds. Auto mining is doubled.",reward:()=>{state.cash+=state.level*500;toast("🦾 Surge bonus claimed!")}}
-];state.event=events[Math.floor(Math.random()*events.length)];state.eventEnds=Date.now()+20000;state.event.__claimed=false;update()
-}
-function claimEvent(){if(!state.event)return;state.event.reward();state.event=null;save();update()}
-function showModal(t,x){$("modalTitle").textContent=t;$("modalText").textContent=x;$("modal").classList.add("show")}
+let state={cash:0,ore:0,capacity:25,power:1,world:0,rocksMined:0,level:1,xp:0,totalCash:0,upgrade:0};
+try{state={...state,...JSON.parse(localStorage.getItem(SAVE)||"{}")}}catch{}
+const save=()=>localStorage.setItem(SAVE,JSON.stringify(state));
+const money=n=>"$"+Math.floor(n).toLocaleString();
+const toast=t=>{const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");clearTimeout(window._t);window._t=setTimeout(()=>e.classList.remove("show"),1500)};
 function update(){
-$("cash").textContent=money(state.cash);$("ore").textContent=num(state.ore);$("oreBig").textContent=num(state.ore);$("shopCash").textContent=money(state.cash);$("topLevel").textContent=state.level;$("topShards").textContent=state.shards;
-$("zoneName").textContent=zones[state.zone].name;$("depth").textContent=zones[state.zone].depth+"m";$("depthBar").style.width=((state.zone+1)/zones.length*100)+"%";
-$("power").textContent=num(clickPower());$("auto").textContent=autoRate().toFixed(2)+"/s";$("value").textContent="$"+saleMultiplier().toFixed(2);$("mult").textContent="x"+saleMultiplier().toFixed(2);$("crit").textContent=Math.round(critChance()*100)+"%";
-$("energy").textContent=Math.floor(state.energy)+"/"+maxEnergy();$("combo").textContent="x"+state.combo.toFixed(2);$("level").textContent=state.level;$("statLevel").textContent=state.level;$("xpText").textContent=Math.floor(state.xp)+"/"+xpNeeded();$("xpBar").style.width=Math.min(100,state.xp/xpNeeded()*100)+"%";
-["pickaxe","drill","furnace","conveyor","luck","battery","magnet","scanner"].forEach(t=>{$(t+"Lvl").textContent=state[t]});
-document.querySelectorAll(".buy").forEach(btn=>{let t=btn.dataset.upgrade,c=upgradeCost(t);btn.textContent=(state.cash>=c?"BUY":"NEED")+" • "+money(c);btn.classList.toggle("can",state.cash>=c)});
-$("totalCash").textContent=money(state.totalCash);$("totalOre").textContent=num(state.totalOre);$("clicks").textContent=num(state.clicks);$("crits").textContent=num(state.crits);$("rareOres").textContent=num(state.rareOres);$("bestCombo").textContent="x"+state.bestCombo.toFixed(2);$("shards").textContent=num(state.shards);
-let possible=Math.floor(Math.sqrt(state.totalCash/12000)),gain=Math.max(0,possible-state.shards);$("shardsGain").textContent=gain+" Shard"+(gain===1?"":"s")+" available";
-$("oreTypes").innerHTML=Object.entries(state.inventory).filter(([,v])=>v>0).slice(-6).map(([n,v])=>`<span class="ore-chip"><b>${n}</b> ${num(v)}</span>`).join("");
-renderZones();renderQuests();renderAchievements();renderCompactZones();renderCompactQuests();
-if(state.event){$("eventBox").classList.add("show");$("eventTitle").textContent=state.event.title;$("eventText").textContent=state.event.text;$("eventButton").textContent="CLAIM BONUS"}else $("eventBox").classList.remove("show");
+ cash.textContent=money(state.cash);bag.textContent=Math.floor(state.ore)+" / "+state.capacity;power.textContent=state.power;level.textContent=state.level;
+ questBar.style.width=Math.min(100,state.rocksMined/25*100)+"%";
+ questText.textContent=state.rocksMined>=25?"Quest complete! Claim $500":"Mine "+Math.max(0,25-state.rocksMined)+" more rocks";
 }
-function renderCompactZones(){
-$("compactZones").innerHTML=zones.map((z,i)=>{
-let unlocked=i<=state.zone;
-return `<div class="compact-zone"><h4>${z.name}</h4><p>${z.depth}m • ${z.mult}x value</p><button class="${unlocked||state.totalCash>=z.need?"can":""}" ${unlocked?"disabled":""} onclick="unlockZone(${i})">${unlocked?"UNLOCKED":i===0?"START":"UNLOCK • "+money(z.need)}</button></div>`
-}).join("")
-}
-function renderCompactQuests(){
-$("compactQuests").innerHTML=questList().map((q,i)=>{
-let done=!!state.quests[i],cur=Math.min(q.goal,state.quests[i+"p"]||0);
-return `<div class="compact-quest"><h4>${done?"🏆":"🎯"} ${q.name}</h4><p>${num(cur)}/${num(q.goal)} • ${money(q.reward)} reward</p></div>`
-}).join("")
-}
-function renderZones(){$("zoneGrid").innerHTML=zones.map((z,i)=>{let unlocked=i<=state.zone;return `<div class="zone"><span class="badge ${unlocked?"done":""}">${unlocked?"UNLOCKED":"LOCKED"}</span><h3>${z.name}</h3><p>${z.depth}m deep • up to ${z.mult}x sale value • rare ${z.ore}</p><button class="${unlocked||state.totalCash>=z.need?"can":""}" ${unlocked?"disabled":""} onclick="unlockZone(${i})">${unlocked?"ENTERED":i===0?"START":"UNLOCK • "+money(z.need)}</button></div>`}).join("")}
-function renderQuests(){$("questGrid").innerHTML=questList().map((q,i)=>{let done=!!state.quests[i],cur=Math.min(q.goal,state.quests[i+"p"]||0);return `<div class="quest"><span class="badge ${done?"done":""}">${done?"COMPLETE":"ACTIVE"}</span><h3>${q.name}</h3><p>${q.desc}<br><b>${num(cur)}/${num(q.goal)}</b> • Reward ${money(q.reward)}</p><div class="xp"><i style="width:${cur/q.goal*100}%"></i></div></div>`}).join("")}
-function renderAchievements(){$("achievementGrid").innerHTML=achievementList().map((a,i)=>{let d=!!state.achievements[i];return `<div class="achievement"><span class="badge ${d?"done":""}">${d?"UNLOCKED":"LOCKED"}</span><h3>${a.name}</h3><p>${a.desc}</p></div>`}).join("")}
+const scene=new THREE.Scene();scene.background=new THREE.Color(worlds[state.world].sky);
+const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.1,500);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(2,devicePixelRatio));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.getElementById("game").appendChild(renderer.domElement);
+const hemi=new THREE.HemisphereLight(0xdff5ff,0x31502b,2.2);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xfff4dc,3);sun.position.set(-30,45,25);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
 
-document.querySelectorAll(".tab").forEach(tab=>tab.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));tab.classList.add("active");$(tab.dataset.page).classList.add("active")}));
-$("rockButton").addEventListener("click",mine);$("sellButton").addEventListener("click",sellOre);$("prestigeButton").addEventListener("click",prestige);$("eventButton").addEventListener("click",claimEvent);$("closeModal").addEventListener("click",()=>$("modal").classList.remove("show"));$("modal").addEventListener("click",e=>{if(e.target===$("modal"))$("modal").classList.remove("show")});
-document.querySelectorAll(".buy").forEach(b=>b.addEventListener("click",()=>buy(b.dataset.upgrade)));
-$("resetButton").addEventListener("click",()=>{if(confirm("Delete ALL mining progress? This cannot be undone.")){localStorage.removeItem(SAVE_KEY);location.reload()}});
-document.addEventListener("keydown",e=>{if(e.code==="Space"&&!["INPUT","TEXTAREA"].includes(document.activeElement.tagName)){e.preventDefault();mine()}});
-let last=performance.now(),saveTimer=0;
-function loop(now){
-let dt=Math.min(.25,(now-last)/1000);last=now;
-state.energy=Math.min(maxEnergy(),state.energy+(0.55+state.battery*.12)*dt);
-let generated=autoRate()*dt;if(state.event&&Date.now()>state.eventEnds)state.event=null;
-if(state.event&&state.event.title.includes("SURGE"))generated*=2;
-if(generated>0){let o=chooseOre();state.ore+=generated;state.totalOre+=generated;state.inventory[o.name]=(state.inventory[o.name]||0)+generated;addXP(generated*.25)}
-let sold=Math.min(state.ore,conveyorRate()*dt);if(sold>0){state.ore-=sold;let earned=sold*saleMultiplier();state.cash+=earned;state.totalCash+=earned}
-if(state.lastClick&&Date.now()-state.lastClick>1600)state.combo=Math.max(1,state.combo-.018);
-startRandomEvent();checkAchievements();saveTimer+=dt;if(saveTimer>5){save();saveTimer=0}update();requestAnimationFrame(loop)
+let group=new THREE.Group();scene.add(group),rocks=[],decor=[];
+const mat=(c,rough=.9)=>new THREE.MeshStandardMaterial({color:c,roughness:rough});
+function mesh(geo,c){const m=new THREE.Mesh(geo,mat(c));m.castShadow=true;m.receiveShadow=true;return m}
+function add(o){group.add(o);decor.push(o);return o}
+function rockMesh(x,z,ore=null){
+ const s=.9+Math.random()*1.5, geo=new THREE.DodecahedronGeometry(s,1);
+ const r=mesh(geo,worlds[state.world].rock);r.position.set(x,s*.55,z);r.scale.y=.65+Math.random()*.35;
+ r.userData.mine=true;r.userData.hp=2+state.world*2;r.userData.ore=ore||pickOre();rocks.push(r);add(r);
+ // ore crystals sticking out
+ if(r.userData.ore.name!=="Stone"){
+  for(let i=0;i<2;i++){let c=mesh(new THREE.OctahedronGeometry(.18+Math.random()*.16),r.userData.ore.color);c.position.set((Math.random()-.5)*s,.2,(Math.random()-.5)*s);c.userData.parentRock=r;r.add(c)}
+ }
 }
-const away=Math.min(4*60*60,Math.max(0,(Date.now()-state.lastSeen)/1000));if(away>10&&autoRate()>0){let generated=autoRate()*away;state.ore+=generated;state.totalOre+=generated;let sold=Math.min(state.ore,conveyorRate()*away);state.ore-=sold;let earned=sold*saleMultiplier();state.cash+=earned;state.totalCash+=earned;if(earned>0)setTimeout(()=>toast("While away: earned "+money(earned)),500)}
-update();requestAnimationFrame(loop);
+function pickOre(){let r=Math.random(),s=0;for(const o of oreDefs){s+=o.chance;if(r<s)return o}return oreDefs[0]}
+function tree(x,z){
+ const t=mesh(new THREE.CylinderGeometry(.16,.24,1.8,7),0x765032);t.position.set(x,.9,z);add(t);
+ for(let i=0;i<3;i++){const l=mesh(new THREE.ConeGeometry(1.1-i*.2,1.8,7),0x28713a);l.position.set(x,1.7+i*.65,z);add(l)}
+}
+function build(){
+ while(group.children.length)group.remove(group.children[0]);rocks=[];decor=[];
+ const w=worlds[state.world];
+ const floor=mesh(new THREE.PlaneGeometry(100,100,30,30),w.ground);floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;add(floor);
+ // decorative paths
+ const path=mesh(new THREE.PlaneGeometry(7,75),0xb89461);path.rotation.x=-Math.PI/2;path.position.y=.015;add(path);
+ for(let i=0;i<35;i++){let x=(Math.random()-.5)*75,z=(Math.random()-.5)*75;if(Math.abs(x)<5)continue;tree(x,z)}
+ for(let i=0;i<38;i++){let x=(Math.random()-.5)*70,z=(Math.random()-.5)*70;if(Math.abs(x)<8){i--;continue}rockMesh(x,z)}
+ // mine entrance
+ const cabin=mesh(new THREE.BoxGeometry(6,3.2,5),0x765239);cabin.position.set(-9,1.6,-8);add(cabin);
+ const roof=mesh(new THREE.ConeGeometry(4.5,2.6,4),0x3a2920);roof.rotation.y=Math.PI/4;roof.position.set(-9,4.4,-8);add(roof);
+ const door=mesh(new THREE.BoxGeometry(1.3,2.2,.2),0x241b16);door.position.set(-9,1.1,-5.45);add(door);
+ for(let i=0;i<8;i++){const rail=mesh(new THREE.BoxGeometry(5,.08,.12),0x5d4935);rail.position.set(-9,.12,-3+i*.7);add(rail)}
+}
+build();
+
+let player=new THREE.Group();scene.add(player);
+function buildPlayer(){
+ player.clear();
+ const body=mesh(new THREE.CapsuleGeometry(.48,1.15,5,10),0x202733);body.position.y=1.25;player.add(body);
+ const head=mesh(new THREE.SphereGeometry(.42,12,8),0xb97850);head.position.y=2.25;player.add(head);
+ const hair=mesh(new THREE.SphereGeometry(.44,12,6,0,Math.PI*2,0,Math.PI*.48),0x3a2419);hair.position.y=2.45;player.add(hair);
+ const leg1=mesh(new THREE.CapsuleGeometry(.16,.7,4,7),0x15191f),leg2=leg1.clone();leg1.position.set(-.22,.42,0);leg2.position.set(.22,.42,0);player.add(leg1,leg2);
+ const arm=mesh(new THREE.CapsuleGeometry(.13,.65,4,7),0x202733);arm.position.set(.55,1.35,.05);arm.rotation.z=-.55;player.add(arm);
+ const pick=mesh(new THREE.BoxGeometry(.1,1.5,.1),0x8a5b35);pick.position.set(.75,1.55,.05);pick.rotation.z=-.55;player.add(pick);
+ const head=mesh(new THREE.BoxGeometry(.72,.12,.12),0xb6b0a8);head.position.set(.48,2.08,.05);head.rotation.z=-.55;player.add(head);
+}
+buildPlayer();player.position.set(0,0,8);
+
+let yaw=0.35,camDist=9,drag=false,lastX=0;
+renderer.domElement.addEventListener("pointerdown",e=>{drag=true;lastX=e.clientX});
+addEventListener("pointerup",()=>drag=false);
+addEventListener("pointermove",e=>{if(drag){yaw-=(e.clientX-lastX)*.008;lastX=e.clientX}});
+let keys={};addEventListener("keydown",e=>keys[e.code]=true);addEventListener("keyup",e=>keys[e.code]=false);
+
+const ray=new THREE.Raycaster();
+renderer.domElement.addEventListener("click",e=>{
+ const rect=renderer.domElement.getBoundingClientRect(),x=(e.clientX-rect.left)/rect.width*2-1,y=-(e.clientY-rect.top)/rect.height*2+1;
+ ray.setFromCamera(new THREE.Vector2(x,y),camera);const hit=ray.intersectObjects(rocks,true)[0];
+ if(hit){let r=hit.object;while(r.parent&&!r.userData.mine)r=r.parent;if(r.userData.mine)mine(r)}
+});
+function mine(r){
+ if(state.ore>=state.capacity){toast("🎒 Backpack full — sell your ore!");return}
+ r.userData.hp-=state.power;r.rotation.x+=.12;r.rotation.z+=.08;
+ if(r.userData.hp<=0){
+  const o=r.userData.ore,amount=Math.min(state.capacity-state.ore,1+Math.floor(state.power/2));state.ore+=amount;state.rocksMined++;
+  state.xp+=10;if(state.xp>=100){state.xp-=100;state.level++;state.power++;toast("⭐ LEVEL UP! Pickaxe power increased!")}else toast("⛏️ +"+amount+" "+o.name);
+  const idx=rocks.indexOf(r);if(idx>=0)rocks.splice(idx,1);group.remove(r);setTimeout(()=>rockMesh((Math.random()-.5)*70,(Math.random()-.5)*70),1800);
+ }else toast("⛏️ Hit rock • "+r.userData.hp+" HP left");
+ update();save();
+}
+function sellOre(){if(!state.ore){toast("Mine some ore first!");return}const earned=state.ore*worlds[state.world].mult*(1+state.upgrade*.15);state.cash+=earned;state.totalCash+=earned;state.ore=0;toast("💰 Sold for "+money(earned));update();save()}
+sell.onclick=sellOre;
+
+function show(title,body){modal.classList.add("show");modalBox.innerHTML="<h2>"+title+"</h2>"+body+"<button class='dark' id='close'>CLOSE</button>";close.onclick=()=>modal.classList.remove("show")}
+worlds.onclick=()=>show("🌎 Worlds",worlds.map((w,i)=>`<div class="card"><div class="row"><div><h3>${w.name}</h3><small>Sell multiplier ×${w.mult}</small></div><button ${state.totalCash<w.need?"disabled":""} data-w="${i}">${i===state.world?"CURRENT":state.totalCash>=w.need?"TRAVEL":"NEED "+money(w.need)}</button></div></div>`).join(""));
+modal.addEventListener("click",e=>{if(e.target.dataset.w!==undefined){const i=+e.target.dataset.w;state.world=i;build();scene.background=new THREE.Color(worlds[i].sky);player.position.set(0,0,8);modal.classList.remove("show");toast("🌎 Entered "+worlds[i].name);save();update()}});
+
+upgrades.onclick=()=>{const c=250*Math.pow(1.65,state.power-1);show("⚒ Upgrades",`
+<div class="card"><div class="row"><div><h3>⛏ Pickaxe Power</h3><small>More damage per hit • Level ${state.power}</small></div><button id="buy">${money(c)}</button></div></div>
+<div class="card"><div class="row"><div><h3>🎒 Backpack</h3><small>+10 storage</small></div><button id="bagUp">${money(state.capacity*5)}</button></div></div>
+<div class="card"><div class="row"><div><h3>🔥 Smelter</h3><small>+15% selling value</small></div><button id="smelt">${money(500+state.upgrade*600)}</button></div></div>`);
+setTimeout(()=>{
+ buy.onclick=()=>{if(state.cash>=c){state.cash-=c;state.power++;toast("⛏️ Pickaxe upgraded!");save();update();upgrades.click()}};
+ bagUp.onclick=()=>{let c2=state.capacity*5;if(state.cash>=c2){state.cash-=c2;state.capacity+=10;toast("🎒 Backpack upgraded!");save();update();upgrades.click()}};
+ smelt.onclick=()=>{let c3=500+state.upgrade*600;if(state.cash>=c3){state.cash-=c3;state.upgrade++;toast("🔥 Smelter upgraded!");save();update();upgrades.click()}};
+},0)};
+
+function animate(t){
+ requestAnimationFrame(animate);
+ const dt=.016,move=new THREE.Vector3();
+ if(keys.KeyW||keys.ArrowUp)move.z-=1;if(keys.KeyS||keys.ArrowDown)move.z+=1;if(keys.KeyA||keys.ArrowLeft)move.x-=1;if(keys.KeyD||keys.ArrowRight)move.x+=1;
+ if(move.length()){move.normalize().multiplyScalar(6*dt);move.applyAxisAngle(new THREE.Vector3(0,1,0),yaw);player.position.add(move);player.position.x=Math.max(-45,Math.min(45,player.position.x));player.position.z=Math.max(-45,Math.min(45,player.position.z));player.rotation.y=Math.atan2(move.x,move.z)}
+ const target=player.position.clone();target.y+=1.2;
+ const camOffset=new THREE.Vector3(Math.sin(yaw)*camDist,5.3,Math.cos(yaw)*camDist);camera.position.lerp(target.clone().add(camOffset),.12);camera.lookAt(target);
+ renderer.render(scene,camera)
+}
+update();animate(0);
+addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script>
 </body>
 </html>
